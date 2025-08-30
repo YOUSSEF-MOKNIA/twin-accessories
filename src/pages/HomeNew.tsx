@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Clock, Shield, Truck, Star, Heart } from "lucide-react";
+import { ArrowRight, Clock, Shield, Truck } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../lib/supabase";
 

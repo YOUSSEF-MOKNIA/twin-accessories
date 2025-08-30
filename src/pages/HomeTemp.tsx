@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Watch, Menu, X, ArrowRight, Phone, Instagram } from "lucide-react";
+import { Watch, Menu, X, ArrowRight } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../lib/supabase";
 import AutoScrollingImages from "../components/AutoScrollingImages";
