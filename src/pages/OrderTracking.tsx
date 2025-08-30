@@ -16,7 +16,9 @@ type Order = Database["public"]["Tables"]["orders"]["Row"] & {
 };
 
 const OrderTracking: React.FC = () => {
-  const [searchMethod, setSearchMethod] = useState<'phone' | 'tracking'>('phone');
+  const [searchMethod, setSearchMethod] = useState<"phone" | "tracking">(
+    "phone"
+  );
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");

@@ -1,5 +1,5 @@
-import React from 'react';
-import type { Database, ColorVariant } from '../lib/supabase';
+import React from "react";
+import type { Database, ColorVariant } from "../lib/supabase";
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
 
@@ -9,66 +9,76 @@ interface SoldOutIndicatorProps {
   showStockCount?: boolean;
 }
 
-const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({ 
-  product, 
+const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
+  product,
   compact = false,
-  showStockCount = false 
+  showStockCount = false,
 }) => {
   // Helper functions
   const isProductCompletelyUnavailable = () => {
     // Product is sold out if explicitly marked as sold out
     if (product.is_sold_out) return true;
-    
+
     // Or if it has color variants and ALL colors are sold out
     if (product.has_color_variants && product.colors) {
       const colors = product.colors as ColorVariant[];
-      return colors.length > 0 && colors.every(color => color.is_sold_out);
+      return colors.length > 0 && colors.every((color) => color.is_sold_out);
     }
-    
+
     return false;
   };
-  
+
   const areAllColorsSoldOut = () => {
     if (!product.has_color_variants || !product.colors) return false;
     const colors = product.colors as ColorVariant[];
-    return colors.length > 0 && colors.every(color => color.is_sold_out);
+    return colors.length > 0 && colors.every((color) => color.is_sold_out);
   };
 
   const getAvailableColors = () => {
     // If entire product is marked as sold out, no colors are available
     if (product.is_sold_out) return [];
-    
+
     if (!product.has_color_variants || !product.colors) return [];
-    return (product.colors as ColorVariant[]).filter(color => !color.is_sold_out);
+    return (product.colors as ColorVariant[]).filter(
+      (color) => !color.is_sold_out
+    );
   };
 
   const getSoldOutColors = () => {
     if (!product.has_color_variants || !product.colors) return [];
-    
+
     // If entire product is sold out, all colors are considered sold out
     if (product.is_sold_out) {
       return product.colors as ColorVariant[];
     }
-    
-    return (product.colors as ColorVariant[]).filter(color => color.is_sold_out);
+
+    return (product.colors as ColorVariant[]).filter(
+      (color) => color.is_sold_out
+    );
   };
 
   const getTotalStock = () => {
-    if (product.stock_quantity !== null && product.stock_quantity !== undefined) {
+    if (
+      product.stock_quantity !== null &&
+      product.stock_quantity !== undefined
+    ) {
       return product.stock_quantity;
     }
-    
+
     if (product.has_color_variants && product.colors) {
       const colors = product.colors as ColorVariant[];
       const totalStock = colors.reduce((total, color) => {
-        if (color.stock_quantity !== null && color.stock_quantity !== undefined) {
+        if (
+          color.stock_quantity !== null &&
+          color.stock_quantity !== undefined
+        ) {
           return total + color.stock_quantity;
         }
         return total;
       }, 0);
       return totalStock > 0 ? totalStock : null;
     }
-    
+
     return null;
   };
 
@@ -84,7 +94,7 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
 
     const availableColors = getAvailableColors();
     const soldOutColors = getSoldOutColors();
-    
+
     if (soldOutColors.length > 0 && availableColors.length > 0) {
       return (
         <div className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
@@ -112,9 +122,13 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-sm font-medium text-red-800">Produit Épuisé</span>
+            <span className="text-sm font-medium text-red-800">
+              Produit Épuisé
+            </span>
           </div>
-          <p className="text-xs text-red-600 mt-1">Ce produit n'est actuellement plus disponible</p>
+          <p className="text-xs text-red-600 mt-1">
+            Ce produit n'est actuellement plus disponible
+          </p>
         </div>
       );
     } else if (areAllColorsSoldOut()) {
@@ -122,9 +136,13 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-sm font-medium text-red-800">Toutes les Couleurs Épuisées</span>
+            <span className="text-sm font-medium text-red-800">
+              Toutes les Couleurs Épuisées
+            </span>
           </div>
-          <p className="text-xs text-red-600 mt-1">Aucune couleur n'est actuellement disponible</p>
+          <p className="text-xs text-red-600 mt-1">
+            Aucune couleur n'est actuellement disponible
+          </p>
         </div>
       );
     }
@@ -138,28 +156,36 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
       <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
         <div className="flex items-center space-x-2 mb-2">
           <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-          <span className="text-sm font-medium text-orange-800">Disponibilité Limitée</span>
+          <span className="text-sm font-medium text-orange-800">
+            Disponibilité Limitée
+          </span>
         </div>
-        
+
         <div className="space-y-2 text-xs">
           {availableColors.length > 0 && (
             <div>
               <span className="text-green-700 font-medium">Disponible: </span>
               <span className="text-green-600">
-                {availableColors.map(c => c.name).join(', ')}
+                {availableColors.map((c) => c.name).join(", ")}
               </span>
               {showStockCount && (
                 <span className="text-green-600">
-                  {' '}({availableColors.reduce((total, c) => total + (c.stock_quantity || 0), 0)} en stock)
+                  {" "}
+                  (
+                  {availableColors.reduce(
+                    (total, c) => total + (c.stock_quantity || 0),
+                    0
+                  )}{" "}
+                  en stock)
                 </span>
               )}
             </div>
           )}
-          
+
           <div>
             <span className="text-red-700 font-medium">Épuisé: </span>
             <span className="text-red-600">
-              {soldOutColors.map(c => c.name).join(', ')}
+              {soldOutColors.map((c) => c.name).join(", ")}
             </span>
           </div>
         </div>
@@ -175,9 +201,13 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="text-sm font-medium text-yellow-800">Stock Limité</span>
+            <span className="text-sm font-medium text-yellow-800">
+              Stock Limité
+            </span>
           </div>
-          <p className="text-xs text-yellow-600 mt-1">Plus que {totalStock} disponible{totalStock > 1 ? 's' : ''}</p>
+          <p className="text-xs text-yellow-600 mt-1">
+            Plus que {totalStock} disponible{totalStock > 1 ? "s" : ""}
+          </p>
         </div>
       );
     }
@@ -188,7 +218,9 @@ const SoldOutIndicator: React.FC<SoldOutIndicatorProps> = ({
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           <span className="text-sm font-medium text-green-800">En Stock</span>
         </div>
-        <p className="text-xs text-green-600 mt-1">{totalStock} disponible{totalStock > 1 ? 's' : ''}</p>
+        <p className="text-xs text-green-600 mt-1">
+          {totalStock} disponible{totalStock > 1 ? "s" : ""}
+        </p>
       </div>
     );
   }

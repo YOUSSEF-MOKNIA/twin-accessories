@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { Search, Package, Truck, MapPin, CheckCircle, Clock, AlertCircle, Phone, User } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import type { Database } from '../lib/supabase';
+import React, { useState } from "react";
+import {
+  Search,
+  Package,
+  Truck,
+  MapPin,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Phone,
+  User,
+} from "lucide-react";
+import { supabase } from "../lib/supabase";
+import type { Database } from "../lib/supabase";
 
-type Order = Database['public']['Tables']['orders']['Row'] & {
-  products: Database['public']['Tables']['products']['Row'];
+type Order = Database["public"]["Tables"]["orders"]["Row"] & {
+  products: Database["public"]["Tables"]["products"]["Row"];
 };
 
 const OrderTracking: React.FC = () => {
-  const [searchMethod, setSearchMethod] = useState<'phone' | 'tracking'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [trackingNumber, setTrackingNumber] = useState('');
+  const [searchMethod, setSearchMethod] = useState<"phone" | "tracking">(
+    "phone"
+  );
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [trackingNumber, setTrackingNumber] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,30 +40,34 @@ const OrderTracking: React.FC = () => {
 
     try {
       // Clean and normalize the inputs
-      const cleanPhone = phoneNumber.trim().replace(/\s+/g, '');
+      const cleanPhone = phoneNumber.trim().replace(/\s+/g, "");
       const cleanName = customerName.trim();
 
       // Try exact phone match with exact name match first
       let { data, error } = await supabase
-        .from('orders')
-        .select(`
+        .from("orders")
+        .select(
+          `
           *,
           products (*)
-        `)
-        .eq('phone', cleanPhone)
-        .eq('customer_name', cleanName);
+        `
+        )
+        .eq("phone", cleanPhone)
+        .eq("customer_name", cleanName);
 
       // If no exact match, try with case-insensitive partial name match
       if (!data || data.length === 0) {
         const { data: nameData, error: nameError } = await supabase
-          .from('orders')
-          .select(`
+          .from("orders")
+          .select(
+            `
             *,
             products (*)
-          `)
-          .eq('phone', cleanPhone)
-          .ilike('customer_name', `%${cleanName}%`);
-        
+          `
+          )
+          .eq("phone", cleanPhone)
+          .ilike("customer_name", `%${cleanName}%`);
+
         if (nameData && nameData.length > 0) {
           data = nameData;
           error = nameError;
@@ -61,33 +77,37 @@ const OrderTracking: React.FC = () => {
       // If still no results, try with different phone formats
       if (!data || data.length === 0) {
         // Try without country code if phone starts with +
-        if (cleanPhone.startsWith('+')) {
+        if (cleanPhone.startsWith("+")) {
           const phoneWithoutCountry = cleanPhone.substring(4); // Remove +212
           const { data: altData, error: altError } = await supabase
-            .from('orders')
-            .select(`
+            .from("orders")
+            .select(
+              `
               *,
               products (*)
-            `)
-            .eq('phone', phoneWithoutCountry)
-            .ilike('customer_name', `%${cleanName}%`);
-          
+            `
+            )
+            .eq("phone", phoneWithoutCountry)
+            .ilike("customer_name", `%${cleanName}%`);
+
           if (altData && altData.length > 0) {
             data = altData;
             error = altError;
           }
         } else {
           // Try with Morocco country code
-          const phoneWithCountry = '+212' + cleanPhone;
+          const phoneWithCountry = "+212" + cleanPhone;
           const { data: altData, error: altError } = await supabase
-            .from('orders')
-            .select(`
+            .from("orders")
+            .select(
+              `
               *,
               products (*)
-            `)
-            .eq('phone', phoneWithCountry)
-            .ilike('customer_name', `%${cleanName}%`);
-          
+            `
+            )
+            .eq("phone", phoneWithCountry)
+            .ilike("customer_name", `%${cleanName}%`);
+
           if (altData && altData.length > 0) {
             data = altData;
             error = altError;
@@ -98,14 +118,21 @@ const OrderTracking: React.FC = () => {
       // If still no results, try fuzzy search on both phone and name
       if (!data || data.length === 0) {
         const { data: fuzzyData, error: fuzzyError } = await supabase
-          .from('orders')
-          .select(`
+          .from("orders")
+          .select(
+            `
             *,
             products (*)
-          `)
-          .or(`phone.like.%${cleanPhone}%,phone.like.%${cleanPhone.replace('+212', '')}%`)
-          .ilike('customer_name', `%${cleanName}%`);
-        
+          `
+          )
+          .or(
+            `phone.like.%${cleanPhone}%,phone.like.%${cleanPhone.replace(
+              "+212",
+              ""
+            )}%`
+          )
+          .ilike("customer_name", `%${cleanName}%`);
+
         if (fuzzyData && fuzzyData.length > 0) {
           data = fuzzyData;
           error = fuzzyError;
@@ -115,7 +142,9 @@ const OrderTracking: React.FC = () => {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        setError('Aucune commande trouvée avec ce numéro de téléphone et ce nom.');
+        setError(
+          "Aucune commande trouvée avec ce numéro de téléphone et ce nom."
+        );
         return;
       }
 
@@ -124,8 +153,10 @@ const OrderTracking: React.FC = () => {
         setSelectedOrder(data[0]);
       }
     } catch (err) {
-      console.error('Search error:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors de la recherche');
+      console.error("Search error:", err);
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de la recherche"
+      );
     } finally {
       setLoading(false);
     }
@@ -142,17 +173,21 @@ const OrderTracking: React.FC = () => {
 
     try {
       const { data, error } = await supabase
-        .from('orders')
-        .select(`
+        .from("orders")
+        .select(
+          `
           *,
           products (*)
-        `)
-        .eq('tracking_number', trackingNumber.trim().toUpperCase())
+        `
+        )
+        .eq("tracking_number", trackingNumber.trim().toUpperCase())
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          setError('Numéro de suivi introuvable. Veuillez vérifier et réessayer.');
+        if (error.code === "PGRST116") {
+          setError(
+            "Numéro de suivi introuvable. Veuillez vérifier et réessayer."
+          );
         } else {
           throw error;
         }
@@ -161,7 +196,9 @@ const OrderTracking: React.FC = () => {
 
       setSelectedOrder(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la recherche');
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de la recherche"
+      );
     } finally {
       setLoading(false);
     }
@@ -169,15 +206,15 @@ const OrderTracking: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return <Clock className="h-6 w-6 text-yellow-500" />;
-      case 'confirmed':
+      case "confirmed":
         return <CheckCircle className="h-6 w-6 text-blue-500" />;
-      case 'shipped':
+      case "shipped":
         return <Truck className="h-6 w-6 text-purple-500" />;
-      case 'delivered':
+      case "delivered":
         return <MapPin className="h-6 w-6 text-green-500" />;
-      case 'cancelled':
+      case "cancelled":
         return <AlertCircle className="h-6 w-6 text-red-500" />;
       default:
         return <Package className="h-6 w-6 text-gray-500" />;
@@ -186,16 +223,16 @@ const OrderTracking: React.FC = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'En attente de confirmation';
-      case 'confirmed':
-        return 'Commande confirmée';
-      case 'shipped':
-        return 'Expédiée';
-      case 'delivered':
-        return 'Livrée';
-      case 'cancelled':
-        return 'Annulée';
+      case "pending":
+        return "En attente de confirmation";
+      case "confirmed":
+        return "Commande confirmée";
+      case "shipped":
+        return "Expédiée";
+      case "delivered":
+        return "Livrée";
+      case "cancelled":
+        return "Annulée";
       default:
         return status;
     }
@@ -203,47 +240,54 @@ const OrderTracking: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'confirmed':
-        return 'bg-blue-100 text-blue-800';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800';
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+        return "bg-blue-100 text-blue-800";
+      case "shipped":
+        return "bg-purple-100 text-purple-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-MA', {
-      style: 'currency',
-      currency: 'MAD',
+    return new Intl.NumberFormat("fr-MA", {
+      style: "currency",
+      currency: "MAD",
     }).format(price);
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(date).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const renderOrderCard = (order: Order) => (
-    <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div
+      key={order.id}
+      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+    >
       {/* Order Header */}
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-light text-gray-900">
             Commande #{order.tracking_number}
           </h3>
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+          <span
+            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+              order.status
+            )}`}
+          >
             {getStatusIcon(order.status)}
             <span className="ml-2">{getStatusText(order.status)}</span>
           </span>
@@ -284,28 +328,35 @@ const OrderTracking: React.FC = () => {
         </h4>
         <div className="space-y-3">
           {[
-            { status: 'pending', label: 'Commande reçue' },
-            { status: 'confirmed', label: 'Commande confirmée' },
-            { status: 'shipped', label: 'Expédiée' },
-            { status: 'delivered', label: 'Livrée' },
+            { status: "pending", label: "Commande reçue" },
+            { status: "confirmed", label: "Commande confirmée" },
+            { status: "shipped", label: "Expédiée" },
+            { status: "delivered", label: "Livrée" },
           ].map((step, index) => {
-            const isActive = 
-              (order.status === 'pending' && step.status === 'pending') ||
-              (order.status === 'confirmed' && ['pending', 'confirmed'].includes(step.status)) ||
-              (order.status === 'shipped' && ['pending', 'confirmed', 'shipped'].includes(step.status)) ||
-              (order.status === 'delivered' && ['pending', 'confirmed', 'shipped', 'delivered'].includes(step.status));
-            
+            const isActive =
+              (order.status === "pending" && step.status === "pending") ||
+              (order.status === "confirmed" &&
+                ["pending", "confirmed"].includes(step.status)) ||
+              (order.status === "shipped" &&
+                ["pending", "confirmed", "shipped"].includes(step.status)) ||
+              (order.status === "delivered" &&
+                ["pending", "confirmed", "shipped", "delivered"].includes(
+                  step.status
+                ));
+
             const isCurrent = order.status === step.status;
-            
+
             return (
               <div key={step.status} className="flex items-center">
-                <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                  isActive 
-                    ? isCurrent 
-                      ? 'bg-gray-900 text-white' 
-                      : 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
+                <div
+                  className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
+                    isActive
+                      ? isCurrent
+                        ? "bg-gray-900 text-white"
+                        : "bg-green-500 text-white"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
                   {isActive && !isCurrent ? (
                     <CheckCircle className="h-4 w-4" />
                   ) : (
@@ -313,9 +364,11 @@ const OrderTracking: React.FC = () => {
                   )}
                 </div>
                 <div className="ml-3">
-                  <p className={`text-sm ${
-                    isActive ? 'text-gray-900 font-medium' : 'text-gray-500'
-                  }`}>
+                  <p
+                    className={`text-sm ${
+                      isActive ? "text-gray-900 font-medium" : "text-gray-500"
+                    }`}
+                  >
                     {step.label}
                   </p>
                 </div>
@@ -345,22 +398,22 @@ const OrderTracking: React.FC = () => {
           <div className="flex justify-center mb-6">
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setSearchMethod('phone')}
+                onClick={() => setSearchMethod("phone")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  searchMethod === 'phone'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  searchMethod === "phone"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
                 <Phone className="inline h-4 w-4 mr-2" />
                 Téléphone + Nom
               </button>
               <button
-                onClick={() => setSearchMethod('tracking')}
+                onClick={() => setSearchMethod("tracking")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  searchMethod === 'tracking'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  searchMethod === "tracking"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
                 <Search className="inline h-4 w-4 mr-2" />
@@ -370,8 +423,11 @@ const OrderTracking: React.FC = () => {
           </div>
 
           {/* Search Form */}
-          {searchMethod === 'phone' ? (
-            <form onSubmit={handleSearchByPhone} className="max-w-md mx-auto space-y-4">
+          {searchMethod === "phone" ? (
+            <form
+              onSubmit={handleSearchByPhone}
+              className="max-w-md mx-auto space-y-4"
+            >
               <div className="relative">
                 <input
                   type="tel"
@@ -398,14 +454,19 @@ const OrderTracking: React.FC = () => {
               </div>
               <button
                 type="submit"
-                disabled={loading || !phoneNumber.trim() || !customerName.trim()}
+                disabled={
+                  loading || !phoneNumber.trim() || !customerName.trim()
+                }
                 className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Recherche...' : 'Rechercher mes commandes'}
+                {loading ? "Recherche..." : "Rechercher mes commandes"}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleSearchByTracking} className="max-w-md mx-auto">
+            <form
+              onSubmit={handleSearchByTracking}
+              className="max-w-md mx-auto"
+            >
               <div className="relative">
                 <input
                   type="text"
@@ -422,7 +483,7 @@ const OrderTracking: React.FC = () => {
                 disabled={loading || !trackingNumber.trim()}
                 className="w-full mt-4 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Recherche...' : 'Rechercher'}
+                {loading ? "Recherche..." : "Rechercher"}
               </button>
             </form>
           )}
@@ -446,18 +507,26 @@ const OrderTracking: React.FC = () => {
             </h2>
             <div className="grid gap-4">
               {orders.map((order) => (
-                <div 
+                <div
                   key={order.id}
                   onClick={() => setSelectedOrder(order)}
                   className="bg-white rounded-lg border border-gray-200 p-4 cursor-pointer hover:border-gray-300 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">#{order.tracking_number}</p>
-                      <p className="text-sm text-gray-600">{order.products.name}</p>
+                      <p className="font-medium text-gray-900">
+                        #{order.tracking_number}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {order.products.name}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          order.status
+                        )}`}
+                      >
                         {getStatusText(order.status)}
                       </span>
                       <p className="text-sm text-gray-600 mt-1">

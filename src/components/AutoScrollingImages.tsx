@@ -179,10 +179,10 @@ const AutoScrollingImages: React.FC<AutoScrollingImagesProps> = ({
                 <div
                   key={index}
                   className={`w-4 h-4 rounded-full border-2 border-white shadow-lg ${
-                    color.is_sold_out ? 'opacity-50' : ''
+                    color.is_sold_out ? "opacity-50" : ""
                   }`}
                   style={{ backgroundColor: color.hex }}
-                  title={`${color.name}${color.is_sold_out ? ' - Épuisé' : ''}`}
+                  title={`${color.name}${color.is_sold_out ? " - Épuisé" : ""}`}
                 />
               ))}
             {(product.colors as ColorVariant[]).length > 3 && (

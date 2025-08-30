@@ -38,8 +38,8 @@ const ProductDetail: React.FC = () => {
 
     if (product.has_color_variants && product.colors) {
       const colors = product.colors as ColorVariant[];
-      const availableColors = colors.filter(c => !c.is_sold_out);
-      
+      const availableColors = colors.filter((c) => !c.is_sold_out);
+
       if (availableColors.length > 0) {
         // Use first available color
         const firstAvailableColor = availableColors[0];
@@ -113,19 +113,22 @@ const ProductDetail: React.FC = () => {
   const isOrderingDisabled = (): boolean => {
     // Product is unavailable if explicitly marked as sold out
     if (product?.is_sold_out) return true;
-    
+
     // Or if it has color variants and all colors are sold out
     if (product?.has_color_variants && product.colors) {
       const colors = product.colors as ColorVariant[];
-      if (colors.length > 0 && colors.every(color => color.is_sold_out)) return true;
+      if (colors.length > 0 && colors.every((color) => color.is_sold_out))
+        return true;
     }
-    
+
     // Or if a specific color is selected and it's sold out
     if (product?.has_color_variants && selectedColor && product.colors) {
-      const selectedColorData = (product.colors as ColorVariant[]).find(c => c.name === selectedColor);
+      const selectedColorData = (product.colors as ColorVariant[]).find(
+        (c) => c.name === selectedColor
+      );
       return selectedColorData?.is_sold_out === true;
     }
-    
+
     return false;
   };
 
@@ -133,7 +136,7 @@ const ProductDetail: React.FC = () => {
   const areAllColorsSoldOut = (): boolean => {
     if (!product?.has_color_variants || !product.colors) return false;
     const colors = product.colors as ColorVariant[];
-    return colors.length > 0 && colors.every(color => color.is_sold_out);
+    return colors.length > 0 && colors.every((color) => color.is_sold_out);
   };
 
   // Helper function to check if product is completely unavailable
@@ -301,10 +304,16 @@ const ProductDetail: React.FC = () => {
                   {(product.colors as ColorVariant[]).map((color) => (
                     <button
                       key={color.name}
-                      onClick={() => !color.is_sold_out && !product.is_sold_out && handleColorChange(color.name)}
+                      onClick={() =>
+                        !color.is_sold_out &&
+                        !product.is_sold_out &&
+                        handleColorChange(color.name)
+                      }
                       disabled={color.is_sold_out || product.is_sold_out}
                       className={`p-4 border rounded-lg text-left transition-all relative ${
-                        selectedColor === color.name && !color.is_sold_out && !product.is_sold_out
+                        selectedColor === color.name &&
+                        !color.is_sold_out &&
+                        !product.is_sold_out
                           ? "border-gray-900 bg-gray-50"
                           : color.is_sold_out || product.is_sold_out
                           ? "border-gray-200 bg-gray-100 cursor-not-allowed opacity-60"
@@ -314,26 +323,38 @@ const ProductDetail: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <div
                           className={`w-6 h-6 rounded-full border-2 border-white shadow-md ${
-                            color.is_sold_out || product.is_sold_out ? 'opacity-50' : ''
+                            color.is_sold_out || product.is_sold_out
+                              ? "opacity-50"
+                              : ""
                           }`}
                           style={{ backgroundColor: color.hex }}
                         ></div>
                         <div className="flex-1">
-                          <span className={`text-sm font-medium ${
-                            color.is_sold_out || product.is_sold_out ? 'text-gray-400' : 'text-gray-900'
-                          }`}>
+                          <span
+                            className={`text-sm font-medium ${
+                              color.is_sold_out || product.is_sold_out
+                                ? "text-gray-400"
+                                : "text-gray-900"
+                            }`}
+                          >
                             {color.name}
                           </span>
                           {(color.is_sold_out || product.is_sold_out) && (
                             <div className="text-xs text-red-600 font-medium">
-                              {product.is_sold_out ? 'Produit épuisé' : 'Épuisé'}
+                              {product.is_sold_out
+                                ? "Produit épuisé"
+                                : "Épuisé"}
                             </div>
                           )}
-                          {color.stock_quantity !== null && color.stock_quantity !== undefined && !color.is_sold_out && !product.is_sold_out && (
-                            <div className="text-xs text-gray-500">
-                              {color.stock_quantity} disponible{color.stock_quantity > 1 ? 's' : ''}
-                            </div>
-                          )}
+                          {color.stock_quantity !== null &&
+                            color.stock_quantity !== undefined &&
+                            !color.is_sold_out &&
+                            !product.is_sold_out && (
+                              <div className="text-xs text-gray-500">
+                                {color.stock_quantity} disponible
+                                {color.stock_quantity > 1 ? "s" : ""}
+                              </div>
+                            )}
                         </div>
                       </div>
                       {(color.is_sold_out || product.is_sold_out) && (
@@ -354,10 +375,7 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Stock Status Indicator */}
-            <SoldOutIndicator 
-              product={product} 
-              showStockCount={true}
-            />
+            <SoldOutIndicator product={product} showStockCount={true} />
 
             <div className="space-y-4">
               {/* Stock status indicator */}
@@ -369,8 +387,11 @@ const ProductDetail: React.FC = () => {
                 <div className="w-full px-8 py-4 bg-red-100 border border-red-300 text-red-800 text-sm font-medium tracking-wide uppercase text-center rounded-lg">
                   Toutes les Couleurs Épuisées
                 </div>
-              ) : product.has_color_variants && selectedColor && 
-                (product.colors as ColorVariant[]).find(c => c.name === selectedColor)?.is_sold_out ? (
+              ) : product.has_color_variants &&
+                selectedColor &&
+                (product.colors as ColorVariant[]).find(
+                  (c) => c.name === selectedColor
+                )?.is_sold_out ? (
                 <div className="w-full px-8 py-4 bg-orange-100 border border-orange-300 text-orange-800 text-sm font-medium tracking-wide uppercase text-center rounded-lg">
                   Couleur Sélectionnée Épuisée
                 </div>
@@ -399,8 +420,6 @@ const ProductDetail: React.FC = () => {
                 Continuer les Achats
               </button>
             </div>
-
-            
           </div>
         </div>
       </div>

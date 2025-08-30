@@ -598,7 +598,8 @@ const AdminProducts: React.FC = () => {
                         </label>
                       </div>
                       <p className="mt-1 text-sm text-gray-500">
-                        Marquer ce produit comme épuisé (non disponible à la commande)
+                        Marquer ce produit comme épuisé (non disponible à la
+                        commande)
                       </p>
                     </div>
 
@@ -619,7 +620,8 @@ const AdminProducts: React.FC = () => {
                             value: 0,
                             message: "La quantité ne peut pas être négative",
                           },
-                          setValueAs: (value) => value === "" ? null : parseInt(value) || null,
+                          setValueAs: (value) =>
+                            value === "" ? null : parseInt(value) || null,
                         })}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                         placeholder="Laisser vide si non suivi"
@@ -734,7 +736,9 @@ const AdminProducts: React.FC = () => {
                                     updateColorVariant(
                                       colorIndex,
                                       "stock_quantity",
-                                      e.target.value ? parseInt(e.target.value) : null
+                                      e.target.value
+                                        ? parseInt(e.target.value)
+                                        : null
                                     )
                                   }
                                   placeholder="Quantité disponible"
@@ -1013,7 +1017,7 @@ const AdminProducts: React.FC = () => {
             <div
               key={product.id}
               className={`bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow ${
-                product.is_sold_out ? 'opacity-75' : ''
+                product.is_sold_out ? "opacity-75" : ""
               }`}
             >
               <div className="aspect-square bg-gray-200 overflow-hidden relative">
@@ -1059,12 +1063,14 @@ const AdminProducts: React.FC = () => {
                         <div
                           key={index}
                           className={`w-4 h-4 rounded-full border-2 ${
-                            color.is_sold_out 
-                              ? 'border-red-500 opacity-50' 
-                              : 'border-gray-300'
+                            color.is_sold_out
+                              ? "border-red-500 opacity-50"
+                              : "border-gray-300"
                           }`}
                           style={{ backgroundColor: color.hex }}
-                          title={`${color.name}${color.is_sold_out ? ' - Épuisé' : ''}`}
+                          title={`${color.name}${
+                            color.is_sold_out ? " - Épuisé" : ""
+                          }`}
                         />
                       ))}
                     </div>

@@ -45,17 +45,20 @@ const Order: React.FC = () => {
     if (selectedProduct) {
       if (selectedProduct.has_color_variants && selectedProduct.colors) {
         const colors = selectedProduct.colors as ColorVariant[];
-        const availableColors = colors.filter(c => !c.is_sold_out);
-        
+        const availableColors = colors.filter((c) => !c.is_sold_out);
+
         if (availableColors.length > 0) {
           // Use pre-selected color if available and not sold out, otherwise use first available color
           let colorToSelect: string;
-          if (preSelectedColor && availableColors.find((c) => c.name === preSelectedColor)) {
+          if (
+            preSelectedColor &&
+            availableColors.find((c) => c.name === preSelectedColor)
+          ) {
             colorToSelect = preSelectedColor;
           } else {
             colorToSelect = availableColors[0].name;
           }
-          
+
           const selectedColorData = colors.find(
             (c) => c.name === colorToSelect
           )!;
@@ -87,11 +90,19 @@ const Order: React.FC = () => {
     if (!selectedProduct) return;
 
     // Validation: Check if selected color is sold out
-    if (selectedProduct.has_color_variants && selectedProduct.colors && orderForm.selected_color) {
+    if (
+      selectedProduct.has_color_variants &&
+      selectedProduct.colors &&
+      orderForm.selected_color
+    ) {
       const colors = selectedProduct.colors as ColorVariant[];
-      const selectedColorData = colors.find(c => c.name === orderForm.selected_color);
+      const selectedColorData = colors.find(
+        (c) => c.name === orderForm.selected_color
+      );
       if (selectedColorData?.is_sold_out) {
-        alert("La couleur sélectionnée n'est plus disponible. Veuillez choisir une autre couleur.");
+        alert(
+          "La couleur sélectionnée n'est plus disponible. Veuillez choisir une autre couleur."
+        );
         return;
       }
     }
@@ -153,9 +164,13 @@ const Order: React.FC = () => {
   }
 
   // Check if product is completely sold out
-  const isProductSoldOut = selectedProduct.is_sold_out || 
-    (selectedProduct.has_color_variants && selectedProduct.colors && 
-     (selectedProduct.colors as ColorVariant[]).every(color => color.is_sold_out));
+  const isProductSoldOut =
+    selectedProduct.is_sold_out ||
+    (selectedProduct.has_color_variants &&
+      selectedProduct.colors &&
+      (selectedProduct.colors as ColorVariant[]).every(
+        (color) => color.is_sold_out
+      ));
 
   if (isProductSoldOut) {
     return (
@@ -320,10 +335,18 @@ const Order: React.FC = () => {
                       <button
                         key={color.name}
                         type="button"
-                        onClick={() => !color.is_sold_out && !selectedProduct.is_sold_out && handleColorChange(color.name)}
-                        disabled={color.is_sold_out || selectedProduct.is_sold_out}
+                        onClick={() =>
+                          !color.is_sold_out &&
+                          !selectedProduct.is_sold_out &&
+                          handleColorChange(color.name)
+                        }
+                        disabled={
+                          color.is_sold_out || selectedProduct.is_sold_out
+                        }
                         className={`p-4 border rounded-lg text-left transition-all relative ${
-                          selectedColor === color.name && !color.is_sold_out && !selectedProduct.is_sold_out
+                          selectedColor === color.name &&
+                          !color.is_sold_out &&
+                          !selectedProduct.is_sold_out
                             ? "border-gray-900 bg-gray-50"
                             : color.is_sold_out || selectedProduct.is_sold_out
                             ? "border-gray-200 bg-gray-100 cursor-not-allowed opacity-60"
@@ -333,26 +356,39 @@ const Order: React.FC = () => {
                         <div className="flex items-center space-x-3">
                           <div
                             className={`w-6 h-6 rounded-full border-2 border-white shadow-md ${
-                              color.is_sold_out || selectedProduct.is_sold_out ? 'opacity-50' : ''
+                              color.is_sold_out || selectedProduct.is_sold_out
+                                ? "opacity-50"
+                                : ""
                             }`}
                             style={{ backgroundColor: color.hex }}
                           ></div>
                           <div className="flex-1">
-                            <span className={`text-sm font-medium ${
-                              color.is_sold_out || selectedProduct.is_sold_out ? 'text-gray-400' : 'text-gray-900'
-                            }`}>
+                            <span
+                              className={`text-sm font-medium ${
+                                color.is_sold_out || selectedProduct.is_sold_out
+                                  ? "text-gray-400"
+                                  : "text-gray-900"
+                              }`}
+                            >
                               {color.name}
                             </span>
-                            {(color.is_sold_out || selectedProduct.is_sold_out) && (
+                            {(color.is_sold_out ||
+                              selectedProduct.is_sold_out) && (
                               <div className="text-xs text-red-600 font-medium">
-                                {selectedProduct.is_sold_out ? 'Produit épuisé' : 'Épuisé'}
+                                {selectedProduct.is_sold_out
+                                  ? "Produit épuisé"
+                                  : "Épuisé"}
                               </div>
                             )}
-                            {color.stock_quantity !== null && color.stock_quantity !== undefined && !color.is_sold_out && !selectedProduct.is_sold_out && (
-                              <div className="text-xs text-gray-500">
-                                {color.stock_quantity} disponible{color.stock_quantity > 1 ? 's' : ''}
-                              </div>
-                            )}
+                            {color.stock_quantity !== null &&
+                              color.stock_quantity !== undefined &&
+                              !color.is_sold_out &&
+                              !selectedProduct.is_sold_out && (
+                                <div className="text-xs text-gray-500">
+                                  {color.stock_quantity} disponible
+                                  {color.stock_quantity > 1 ? "s" : ""}
+                                </div>
+                              )}
                           </div>
                         </div>
                         {(color.is_sold_out || selectedProduct.is_sold_out) && (
@@ -432,7 +468,6 @@ const Order: React.FC = () => {
 
             <div className="text-center text-sm text-gray-500 font-light">
               <p>En passant commande, vous acceptez nos conditions de vente.</p>
-             
             </div>
           </div>
         </div>

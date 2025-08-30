@@ -222,7 +222,7 @@ const Home: React.FC = () => {
                 <div
                   key={product.id}
                   className={`group animate-fade-in-up ${
-                    product.is_sold_out ? 'opacity-75' : ''
+                    product.is_sold_out ? "opacity-75" : ""
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -249,7 +249,7 @@ const Home: React.FC = () => {
                         className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 px-8 py-3 bg-white text-gray-900 text-sm font-medium tracking-wide uppercase hover:bg-gray-100"
                         disabled={product.is_sold_out}
                       >
-                        {product.is_sold_out ? 'ÉPUISÉ' : 'Voir Détails'}
+                        {product.is_sold_out ? "ÉPUISÉ" : "Voir Détails"}
                       </button>
                     </div>
                   </div>
@@ -259,16 +259,16 @@ const Home: React.FC = () => {
                       <h3 className="text-2xl font-light text-gray-900 tracking-wide">
                         {product.name}
                       </h3>
-                      <SoldOutIndicator 
-                        product={product} 
-                        compact={true} 
+                      <SoldOutIndicator
+                        product={product}
+                        compact={true}
                         showStockCount={true}
                       />
                     </div>
                     <p className="text-gray-600 mb-4 font-light leading-relaxed">
                       {product.description}
                     </p>
-                    
+
                     {/* Stock status indicators */}
                     {product.has_color_variants && product.colors && (
                       <div className="mb-4">
@@ -277,28 +277,30 @@ const Home: React.FC = () => {
                             <div
                               key={index}
                               className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
-                                color.is_sold_out 
-                                  ? 'bg-red-100 text-red-700' 
-                                  : 'bg-green-100 text-green-700'
+                                color.is_sold_out
+                                  ? "bg-red-100 text-red-700"
+                                  : "bg-green-100 text-green-700"
                               }`}
                             >
                               <div
                                 className={`w-2 h-2 rounded-full ${
-                                  color.is_sold_out ? 'opacity-50' : ''
+                                  color.is_sold_out ? "opacity-50" : ""
                                 }`}
                                 style={{ backgroundColor: color.hex }}
                               />
                               <span>{color.name}</span>
                               {color.is_sold_out && <span>- Épuisé</span>}
-                              {color.stock_quantity !== null && color.stock_quantity !== undefined && !color.is_sold_out && (
-                                <span>({color.stock_quantity})</span>
-                              )}
+                              {color.stock_quantity !== null &&
+                                color.stock_quantity !== undefined &&
+                                !color.is_sold_out && (
+                                  <span>({color.stock_quantity})</span>
+                                )}
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-light text-gray-900">
                         {formatPrice(product.price)}
@@ -312,11 +314,11 @@ const Home: React.FC = () => {
                         disabled={product.is_sold_out}
                         className={`text-sm font-medium transition-colors tracking-wide uppercase border-b ${
                           product.is_sold_out
-                            ? 'text-gray-400 border-gray-200 cursor-not-allowed'
-                            : 'text-gray-900 hover:text-gray-600 border-gray-300 hover:border-gray-900'
+                            ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                            : "text-gray-900 hover:text-gray-600 border-gray-300 hover:border-gray-900"
                         }`}
                       >
-                        {product.is_sold_out ? 'ÉPUISÉ' : 'Commander'}
+                        {product.is_sold_out ? "ÉPUISÉ" : "Commander"}
                       </button>
                     </div>
                   </div>
