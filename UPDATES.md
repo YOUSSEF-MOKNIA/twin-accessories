@@ -57,7 +57,7 @@ Update the footer contact details in `src/pages/HomeTemp.tsx`:
 
 ```tsx
 // Phone number
-<a href="tel:+33123456789">+33 1 23 45 67 89</a>
+<a href="tel:+212 617-373442">+212 617-373442</a>
 
 // Instagram
 <a href="https://instagram.com/twinwatches">@twinwatches</a>
